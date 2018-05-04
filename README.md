@@ -3,7 +3,7 @@
 This project aims to provide a basic framework to calculate metrics used in visual tracking. It also tries to create a
 common interface to trackers and data bases.
 
-For now it provides readers for PascalVOC-like databases and MOT2017 database, currently working on VOT2017 database.
+For now it provides readers for PascalVOC-like databases and [MOT2017](https://motchallenge.net/) database, currently working on [VOT2017](http://www.votchallenge.net/vot2017/dataset.html) database.
 
 For tracker compatibility I am currently working on STRUCK and plan to include all OpenCV trackers (which will be easy) and Re3 Tracker.
 
