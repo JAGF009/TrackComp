@@ -2,17 +2,18 @@
 #define TRACKER_BASIC_H_
 
 #include <string>
+
+#include <opencv2/opencv.hpp>
 #include "Rect.hpp"
-#include <gsl/pointers>
 
 namespace pix
 {
-    class Tracker
+    class TrackerInterface
     {
         public:
             virtual pix::Rect track(const std::string&) = 0;
-            virtual void initialize(const pix::Rect) = 0;
-            virtual ~Tracker() = default;
+            virtual void initialize(const std::string&, const pix::Rect) = 0;
+            virtual ~TrackerInterface() = default;
     };
 }
 
