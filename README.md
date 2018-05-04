@@ -9,7 +9,7 @@ For tracker compatibility I am currently working on STRUCK and plan to include a
 
 ##### Dependency
 
-There is a dependecy on the [Guideline Support Library (GSL)](https://github.com/Microsoft/GSL), to use it you can either copy GSL the files in your project or install it following [these](https://github.com/Microsoft/GSL#using-the-libraries) instructions.
+There is a dependecy on the [Guideline Support Library (GSL)](https://github.com/Microsoft/GSL), to use it you can either copy GSL files in your project or install it following [these](https://github.com/Microsoft/GSL#using-the-libraries) instructions.
 
 ### Building steps
 
