@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-// #include "Chameleon.hpp"
+// Author: René Nyffenegger
 
 class ConfigFile {
   std::map<std::string,std::string> content_;
