@@ -13,12 +13,12 @@ There is a dependecy on the [Guideline Support Library (GSL)](https://github.com
 
 ### Building steps
 
-    $ mkdir build && cd build
-    $ cmake ..
-    $ make -j`nproc`
-    $ ./tcomp
+    mkdir build && cd build
+    cmake ..
+    make -j`nproc`
+    ./tcomp
 
 If you are working with [fish shell](https://fishshell.com/) (strongly recommend you to do so), change the two last lines to:
 
-    $ make -j(nproc)
-    $ ./tcomp
+    make -j(nproc)
+    ./tcomp
