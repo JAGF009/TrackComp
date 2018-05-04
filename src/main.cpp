@@ -6,7 +6,7 @@
 int main(int argc, char** argv)
 {
 
-    auto a = buildBasicConf("run/to/the/hills", "baby", "", "this are the features I like");
+    auto a = buildBasicConf("run/to/the/hills", "baby", "", "these are the features I like");
     std::string line;
     while (getline(a, line))
     {
