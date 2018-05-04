@@ -6,7 +6,7 @@
 #include <sys/stat.h>
 
 
-// Everything here is taken from kind souls at StackOverflow, didn't got the names when I had to.
+// Everything here is taken from kind souls at StackOverflow, didn't get the names when I had to.
 
 std::vector<std::string> filesInDir(const std::string& folder, bool absolute = false);
 std::vector<std::string> filesInDirFilter(const std::string& folder, const std::string& filter);
