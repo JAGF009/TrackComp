@@ -6,6 +6,7 @@
 // #include "3rd_party/formated_string.hpp"
 
 using namespace std;
+using namespace pix;
 
 MOTReader::MOTReader(const string& path)
 {

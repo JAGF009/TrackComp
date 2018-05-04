@@ -18,7 +18,7 @@ class PixReader: public DBReader
         std::vector<pix::Rect> getBBFrame(m_int frame) const override;
         pix::Rect getBBFrameID(m_int frame, const std::string& id) const override;
 
-    friend std::ostream& operator<<(ostream&, const PixReader&);
+    friend std::ostream& operator<<(std::ostream&, const PixReader&);
 
     private: 
         XMLHandler xmls;

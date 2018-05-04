@@ -14,7 +14,6 @@
 
 
 
-using namespace std;
 
 using Boxes = std::vector<pix::Rect>;
 using BoxesMap = std::unordered_map<std::string, Boxes>;

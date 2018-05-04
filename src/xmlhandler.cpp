@@ -15,6 +15,7 @@
 // namespace fs = std::experimental::filesystem;
 
 using namespace pix;
+using namespace std;
 
 XMLHandler::XMLHandler(string filepath)
 {

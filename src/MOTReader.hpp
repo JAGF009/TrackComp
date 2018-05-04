@@ -10,8 +10,6 @@
 #include "Rect.hpp"
 #include "DBReader.hpp"
 
-using namespace pix;
-
 
 class MOTReader: public DBReader
 {
