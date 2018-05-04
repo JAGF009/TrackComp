@@ -17,3 +17,8 @@ There is a dependecy on the [Guideline Support Library (GSL)](https://github.com
     $ cmake ..
     $ make -j`nproc`
     $ ./tcomp
+
+With fish, you can change the two last lines to:
+
+    $ make -j(nproc)
+    $ ./tcomp
