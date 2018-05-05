@@ -18,7 +18,7 @@ There is a dependecy on the [Guideline Support Library (GSL)](https://github.com
     make -j`nproc`
     ./tcomp
 
-If you are working with [fish shell]:
+If you are working with [fish shell](https://fishshell.com/):
     
     mkdir build; cd build
     cmake ..
