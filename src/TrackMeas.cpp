@@ -1,10 +1,56 @@
 #include "TrackMeas.hpp"
 #include "Rect.hpp"
 
+#include "TrackerStruck.hpp"
+#include "../STRUCK/BasicConfig.hpp"
+#include "PIXReader.hpp"
+
+#include <opencv2/opencv.hpp>
+
 #include <algorithm>
 #include <cmath>
 
 using namespace pix;
+using namespace std;
+
+
+TrackMeas::TrackMeas(const std::string& path, DBType dt_type, TrackerType track)
+{
+    auto iss = buildBasicConf(
+        "", "", {"haar gaussian 0.2"}
+    ); 
+    tracker = std::make_unique<TrackerStruck>(iss);
+    db = std::make_unique<PixReader>(path);
+}
+
+TrackMeas::~TrackMeas()
+{
+    cv::destroyAllWindows();
+}
+
+void TrackMeas::go()
+{
+    int frame_number = 0;
+    std::string name{db->imageName(frame_number)};
+    pix::Rect initBB = db->getBBFrameID(frame_number++, "Jose");
+    tracker->init_track(name, initBB);
+    while (!name.empty())
+    {
+        name = db->imageName(frame_number);
+        auto realBB = db->getBBFrameID(frame_number++, "Jose");
+        pix::Rect bbt = tracker->track(name);
+        show(name, realBB, bbt);
+    }
+}
+
+void TrackMeas::show(const string& path, const Rect& gt, const Rect& tr) const
+{
+    cv::Mat im = cv::imread(path);
+    cv::rectangle(im, gt.toOpenCV(), cv::Scalar(255, 0, 0));
+    cv::rectangle(im, tr.toOpenCV(), cv::Scalar(0, 0, 255));
+    cv::imshow("m_name", im);
+    cv::waitKey(1);
+}
 
 void TrackMeas::newFrame(const Rect& gt, const Rect& track)
 {

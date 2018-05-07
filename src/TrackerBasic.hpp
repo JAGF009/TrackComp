@@ -12,7 +12,7 @@ namespace pix
     {
         public:
             virtual pix::Rect track(const std::string&) = 0;
-            virtual void initialize(const std::string&, const pix::Rect) = 0;
+            virtual void init_track(const std::string&, const pix::Rect) = 0;
             virtual ~TrackerInterface() = default;
     };
 }

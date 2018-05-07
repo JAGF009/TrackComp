@@ -1,6 +1,7 @@
 #include "Rect.hpp"
 #include <algorithm>
 
+
 using namespace pix;
 
 std::ostream& operator<<(std::ostream& os, const Point& p)
@@ -32,6 +33,11 @@ std::ostream& operator<<(std::ostream& os, const pix::Rect& r)
 {
     os << "Rect: " << r.id() <<  ", x: " << r.X() << ", y: " << r.Y() << ", w: " << r.W() << ", h: " << r.H();
     return os;
+}
+
+cv::Rect Rect::toOpenCV() const
+{
+    return cv::Rect(m_x, m_y, m_w, m_h);
 }
 
 double Rect::IoU(const Rect& lhs) const

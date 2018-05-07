@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <iostream>
 
+
+#include <opencv2/opencv.hpp>
+
 using m_int = int32_t;
 
 namespace pix
@@ -32,6 +35,8 @@ class Rect{
         m_int top()   const {return upperLeft().y; }
         m_int right()  const {return bottomRight().x; }
         m_int bottom() const {return bottomRight().y; }
+
+        cv::Rect toOpenCV() const;
 
         const std::string& id() const {return m_id;}
 

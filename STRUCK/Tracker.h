@@ -34,7 +34,9 @@
 #include <Eigen/Core>
 #include <opencv/cv.h>
 
-class Config;
+#include "Config.h"
+
+//class Config;
 class Features;
 class Kernel;
 class LaRank;
@@ -55,7 +57,7 @@ public:
 	inline bool IsInitialised() const { return m_initialised; }
 	
 private:
-	const Config& m_config;
+	const Config m_config;
 	bool m_initialised;
 	std::vector<Features*> m_features;
 	std::vector<Kernel*> m_kernels;

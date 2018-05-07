@@ -11,8 +11,7 @@ class TrackerStruck: public pix::TrackerInterface
 {
     public: 
         TrackerStruck(std::istream& in);
-        ~TrackerStruck();
-        void initialize(const std::string&, const pix::Rect) override;
+        void init_track(const std::string&, const pix::Rect) override;
         pix::Rect track(const std::string&) override;
         
 

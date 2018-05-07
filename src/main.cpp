@@ -1,14 +1,9 @@
-#include <iostream>
-// #include <sstream>
-#include <string>
-#include <vector>
-#include "../STRUCK/BasicConfig.hpp"
-#include "TrackerStruck.hpp"
+#include "TrackMeas.hpp"
 
 
 int main(int argc, char** argv)
 {
-    auto configurationString = buildBasicConf("run/to/the/hills", "baby", {"haar gaussian 0.2", "histogram gaussian 0.1", "haar linear"});
-    TrackerStruck track(configurationString);
+    pix::TrackMeas a("/home/dino/TrackingResearch/DB/final/ceil-9/", pix::DBType::VOC, pix::TrackerType::STRUCK);
+    a.go();
     return 0;
 }

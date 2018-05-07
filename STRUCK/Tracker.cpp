@@ -26,7 +26,7 @@
  */
 
 #include "Tracker.h"
-#include "Config.h"
+//#include "Config.h"
 #include "ImageRep.h"
 #include "Sampler.h"
 #include "Sample.h"
@@ -134,8 +134,9 @@ void Tracker::Reset()
 		MultiKernel* k = new MultiKernel(m_kernels, featureCounts);
 		m_kernels.push_back(k);		
 	}
-	
+
 	m_pLearner = new LaRank(m_config, *m_features.back(), *m_kernels.back());
+
 }
 	
 
@@ -231,6 +232,7 @@ void Tracker::UpdateLearner(const ImageRep& image)
 	cout << keptRects.size() << " samples" << endl;
 #endif
 		
+
 	MultiSample sample(image, keptRects);
 	m_pLearner->Update(sample, 0);
 }
