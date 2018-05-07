@@ -2,10 +2,12 @@
 #define TRACKMEAS_H
 #include <vector>
 #include <memory>
+#include <opencv2/opencv.hpp>
 
 #include "Rect.hpp"
 #include "TrackerBasic.hpp"
 #include "DBReader.hpp"
+
 namespace pix{
 
 
@@ -31,6 +33,7 @@ class TrackMeas
         m_int n_false_negatives {0};
         std::unique_ptr<DBReader> db;
         std::unique_ptr<pix::TrackerInterface> tracker;
+        cv::Mat image;
         std::vector<double> m_fScore {};
         std::vector<double> m_f1Score {};
 
@@ -45,7 +48,7 @@ class TrackMeas
 
     private:
 
-        void show(const std::string&, const pix::Rect&, const pix::Rect&) const;
+        int show(const pix::Rect&, const pix::Rect&);
         void newFrame(const pix::Rect& = pix::Rect(), const pix::Rect& = pix::Rect());
 };
 

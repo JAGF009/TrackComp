@@ -2,8 +2,8 @@
 #define TRACKER_STRUCK__
 
 #include "TrackerBasic.hpp"
-#include <gsl/gsl>
 #include <memory>
+#include <opencv2/opencv.hpp>
 
 #include "../STRUCK/Tracker.h"
 
@@ -11,8 +11,8 @@ class TrackerStruck: public pix::TrackerInterface
 {
     public: 
         TrackerStruck(std::istream& in);
-        void init_track(const std::string&, const pix::Rect) override;
-        pix::Rect track(const std::string&) override;
+        void init_track(const cv::Mat&, const pix::Rect) override;
+        pix::Rect track(const cv::Mat&) override;
         
 
     private: 
@@ -23,6 +23,7 @@ class TrackerStruck: public pix::TrackerInterface
         float m_scaleW{1.0};
         float m_scaleH{1.0};
         std::unique_ptr<Tracker> m_p_tracker; // Dont like to work with pointers.
+        cv::Mat m_resized_im;
 
 };
 

@@ -11,8 +11,8 @@ namespace pix
     class TrackerInterface
     {
         public:
-            virtual pix::Rect track(const std::string&) = 0;
-            virtual void init_track(const std::string&, const pix::Rect) = 0;
+            virtual pix::Rect track(const cv::Mat&) = 0;
+            virtual void init_track(const cv::Mat&, const pix::Rect) = 0;
             virtual ~TrackerInterface() = default;
     };
 }

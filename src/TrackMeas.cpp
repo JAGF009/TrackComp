@@ -1,11 +1,11 @@
+//#define SHOW___
+
 #include "TrackMeas.hpp"
 #include "Rect.hpp"
 
 #include "TrackerStruck.hpp"
 #include "../STRUCK/BasicConfig.hpp"
 #include "PIXReader.hpp"
-
-#include <opencv2/opencv.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -30,26 +30,34 @@ TrackMeas::~TrackMeas()
 
 void TrackMeas::go()
 {
+    
     int frame_number = 0;
-    std::string name{db->imageName(frame_number)};
+    std::string name {db->imageName(frame_number)};
+    image = cv::imread(name);
     pix::Rect initBB = db->getBBFrameID(frame_number++, "Jose");
-    tracker->init_track(name, initBB);
+    tracker->init_track(image, initBB);
     while (!name.empty())
     {
-        name = db->imageName(frame_number);
+        std::cout << "Frame number: " << frame_number << std::endl;
+        name = db->imageName(frame_number); 
+        image = cv::imread(name);
         auto realBB = db->getBBFrameID(frame_number++, "Jose");
-        pix::Rect bbt = tracker->track(name);
-        show(name, realBB, bbt);
+        
+        pix::Rect bbt = tracker->track(image);
+#ifdef SHOW___
+        auto key = show(realBB, bbt);
+        if (key == 27) break;
+#endif
+        
     }
 }
 
-void TrackMeas::show(const string& path, const Rect& gt, const Rect& tr) const
+int TrackMeas::show(const Rect& gt, const Rect& tr)
 {
-    cv::Mat im = cv::imread(path);
-    cv::rectangle(im, gt.toOpenCV(), cv::Scalar(255, 0, 0));
-    cv::rectangle(im, tr.toOpenCV(), cv::Scalar(0, 0, 255));
-    cv::imshow("m_name", im);
-    cv::waitKey(1);
+    cv::rectangle(image, gt.toOpenCV(), cv::Scalar(255, 0, 0), 3);
+    cv::rectangle(image, tr.toOpenCV(), cv::Scalar(0, 0, 255), 3);
+    cv::imshow("m_name", image);
+    return cv::waitKey(1);
 }
 
 void TrackMeas::newFrame(const Rect& gt, const Rect& track)

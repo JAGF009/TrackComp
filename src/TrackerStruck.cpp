@@ -16,26 +16,23 @@ TrackerStruck::TrackerStruck(std::istream& in)
     std::cout << " m_imW " << m_imW << " m_imH " << m_imH << std::endl;
 }
 
-void TrackerStruck::init_track(const std::string& imPath, const pix::Rect r)
+void TrackerStruck::init_track(const cv::Mat& im, const pix::Rect r)
 {
-    cv::Mat im = cv::imread(imPath, 0);
-    
     m_scaleW /= im.cols;
     m_scaleH /= im.rows;
-    
-    cv::resize(im, im, cv::Size(m_imW, m_imH));
 
+    cv::resize(im, m_resized_im, cv::Size(m_imW, m_imH));
 
     FloatRect fr(r.X() * m_scaleW, r.Y() * m_scaleH, r.W() * m_scaleW, r.H() * m_scaleH);
-    cv::waitKey(0);
-    m_p_tracker->Initialise(im, fr);
+    m_p_tracker->Initialise(m_resized_im, fr);
 }
 
-pix::Rect TrackerStruck::track(const std::string& imPath)
+pix::Rect TrackerStruck::track(const cv::Mat& im)
 {
-    cv::Mat im = cv::imread(imPath, 0);
-    cv::resize(im, im, cv::Size(m_imW, m_imH));
-    m_p_tracker->Track(im);
+    cv::resize(im, m_resized_im, cv::Size(m_imW, m_imH));
+
+    m_p_tracker->Track(m_resized_im);
+
     auto fr = m_p_tracker->GetBB();
     return pix::Rect(fr.XMin() / m_scaleW, fr.YMin() / m_scaleH, fr.Width() / m_scaleW, fr.Height() / m_scaleH, m_name);
 }
