@@ -17,7 +17,6 @@ PixReader::PixReader(const string &path)
     string name{xmls.imageFullName(frame_number)};
     while (exists(name))
     {
-        std::cout << name << std::endl;
         vector<Rect> v;
         BoxesMap rs = xmls.read(frame_number);
         for (auto it = rs.cbegin(); it != rs.cend(); it++)

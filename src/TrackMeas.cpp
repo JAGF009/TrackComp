@@ -38,7 +38,6 @@ void TrackMeas::go()
     tracker->init_track(image, initBB);
     while (1)
     {
-        std::cout << "Frame number: " << name << endl;
         name = db->imageName(frame_number); 
         if (name.empty()) break;
         image = cv::imread(name);
