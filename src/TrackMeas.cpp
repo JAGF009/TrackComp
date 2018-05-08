@@ -1,4 +1,4 @@
-//#define SHOW___
+#define SHOW___
 
 #include "TrackMeas.hpp"
 #include "Rect.hpp"
@@ -36,14 +36,16 @@ void TrackMeas::go()
     image = cv::imread(name);
     pix::Rect initBB = db->getBBFrameID(frame_number++, "Jose");
     tracker->init_track(image, initBB);
-    while (!name.empty())
+    while (1)
     {
-        std::cout << "Frame number: " << frame_number << std::endl;
+        std::cout << "Frame number: " << name << endl;
         name = db->imageName(frame_number); 
+        if (name.empty()) break;
         image = cv::imread(name);
         auto realBB = db->getBBFrameID(frame_number++, "Jose");
         
         pix::Rect bbt = tracker->track(image);
+        newFrame(realBB, bbt);
 #ifdef SHOW___
         auto key = show(realBB, bbt);
         if (key == 27) break;
@@ -79,13 +81,12 @@ void TrackMeas::newFrame(const Rect& gt, const Rect& track)
 
 double TrackMeas::fScore(double threshold)
 {
-    long int tp = std::count_if(m_fScore.begin(), m_fScore.end(), Comp(threshold));
+    long int tp = std::count_if(m_fScore.begin(), m_fScore.end(), [&](float n){return n >= threshold;});
     m_int local_false_positives = n_false_positives + m_fScore.size() - tp;
     if (tp == 0 && n_false_negatives == 0 && local_false_positives == 0) return 0.0;
     // std::cout << "tp: " << tp << " n_false_negatives: " << n_false_negatives << " n_false_positives: " << n_false_positives << std::endl;
     double precision = ((double) tp) / (tp + local_false_positives);
     double recall = ((double) tp) / (tp + n_false_negatives);
-    // std::cout << "precision: " << precision << " recall: " << recall;
     return 2 * precision * recall / (precision + recall);
 }
 

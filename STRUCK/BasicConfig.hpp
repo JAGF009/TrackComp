@@ -26,7 +26,7 @@ feature = haar gaussian 0.2
 std::stringstream buildBasicConf(const std::string& sPath, const std::string& sName,
                                  const std::vector<std::string>& features, const std::string& rPath = "",
                                  const std::string& fWidth = "320", const std::string& fHeight = "240",
-                                 const std::string& quietMode = "0", const std::string& debugMode = "1",
+                                 const std::string& quietMode = "0", const std::string& debugMode = "0",
                                  const std::string& seed = "0", const std::string& sRadius = "30",
                                  const std::string& svmC = "100.0", const std::string& bSize = "100")
 

@@ -12,8 +12,6 @@ TrackerStruck::TrackerStruck(std::istream& in)
     m_imH = cf.frameHeight;
     m_scaleH = (float) m_imH;
     m_name = "undefined";
-
-    std::cout << " m_imW " << m_imW << " m_imH " << m_imH << std::endl;
 }
 
 void TrackerStruck::init_track(const cv::Mat& im, const pix::Rect r)

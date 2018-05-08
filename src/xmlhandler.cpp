@@ -70,7 +70,7 @@ BoxesMap XMLHandler::read(int frame, string classFilter) const
                     float xmax {box.child("xmax").text().as_float()};
                     float ymax {box.child("ymax").text().as_float()};
                     // qDebug() << xmin << ymin << xmax << ymax;
-                    boxes.push_back(Rect(xmin, ymin, xmax-xmin, ymax-ymin, className));
+                    boxes.emplace_back(xmin, ymin, xmax-xmin, ymax-ymin, className);
                 }
                 if (!boxes.empty()) 
                     allBoxes[className] = boxes; // Maybe there is the object tag but no bndbox in it

@@ -20,7 +20,16 @@ class PixReader: public DBReader
 
     friend std::ostream& operator<<(std::ostream&, const PixReader&);
 
-    private: 
+    private:
+
+        struct RegisterDB
+        {
+            using Boxes = std::vector<pix::Rect>;
+            std::string name;
+            Boxes boxes;
+            RegisterDB(const std::string& nname, const Boxes& bboxes): name(nname), boxes(bboxes) {}
+        };
+        std::vector<RegisterDB> m_db;
         XMLHandler xmls;
 };
 

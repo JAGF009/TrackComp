@@ -3,12 +3,10 @@ cmake_minimum_required(VERSION 3.0.0)
 project(TComp)
 
 set(CMAKE_CXX_STANDARD 14)
-#set(GCC_COVERAGE_COMPILE_FLAGS "-I/usr/local/include/gsl")
 
-include(CheckIncludeFile)
-include(CheckIncludeFileCXX)
-include(CheckIncludeFiles)
-include(ExternalProject)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
 
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
