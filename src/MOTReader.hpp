@@ -30,6 +30,7 @@ class MOTReader: public DBReader
 
         std::vector<pix::Rect> getBBFrame(m_int frame) const override;
         pix::Rect getBBFrameID(m_int frame, const std::string& id) const override;
+        m_int nFrames() const override { return groundtruth.size(); }
         
 
     friend std::ostream& operator<<(std::ostream& os, const MOTReader&);
@@ -38,8 +39,6 @@ class MOTReader: public DBReader
         void _readGroundTruth(const std::string& path);
 
         const std::string imageFormat{"%06d"};
-        //vector<pix::Rect> groundtruth;
-        //unordered_map<int, vector<pix::Rect>> groundtruth;
         std::unordered_map<m_int, std::unique_ptr<std::vector<pix::Rect>>> groundtruth; // Faster this way? Should seek it;
         std::string m_seqName;
         std::string m_imDir;

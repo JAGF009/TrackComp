@@ -12,6 +12,7 @@ class DBReader
         virtual std::string imageName(m_int number) const = 0;
         virtual std::vector<pix::Rect> getBBFrame(m_int frame) const = 0;
         virtual pix::Rect getBBFrameID(m_int frame, const std::string& id) const = 0;
+        virtual m_int nFrames() const = 0;
         virtual ~DBReader() = default;
 
 };

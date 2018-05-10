@@ -37,6 +37,7 @@ class Rect{
         m_int bottom() const {return bottomRight().y; }
 
         cv::Rect toOpenCV() const;
+        static Rect fromOpenCV(const cv::Rect& from, const std::string& name);
 
         const std::string& id() const {return m_id;}
 
@@ -68,6 +69,7 @@ class Rect{
         Rect operator&(const Rect& lhs) const;
         // Calculates the union of two rectangles;
         Rect operator|(const Rect& lhs) const;
+
 
     private:
 

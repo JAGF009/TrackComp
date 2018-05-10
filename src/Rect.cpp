@@ -40,6 +40,11 @@ cv::Rect Rect::toOpenCV() const
     return cv::Rect(m_x, m_y, m_w, m_h);
 }
 
+Rect Rect::fromOpenCV(const cv::Rect& from, const std::string& name)
+{
+    return Rect(from.x, from.y, from.width, from.height, name);
+}
+
 double Rect::IoU(const Rect& lhs) const
 {
     m_int uni {(*this & lhs).area()};

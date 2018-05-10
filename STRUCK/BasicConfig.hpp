@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 
-void add(std::ostream& ss, const std::string& key, const std::string& value)
+void _addConf(std::ostream& ss, const std::string& key, const std::string& value)
 {
     if (!value.empty())
         ss << key << " = " << value << '\n';
@@ -32,18 +32,18 @@ std::stringstream buildBasicConf(const std::string& sPath, const std::string& sN
 
 {
     std::stringstream ss;
-    add(ss, "quietMode", quietMode);
-    add(ss, "debugMode", debugMode);
-    add(ss, "sequenceBasePath", sPath);
-    add(ss, "resultsPath", rPath);
-    add(ss, "sequenceName", sName);
-    add(ss, "frameWidth", fWidth);
-    add(ss, "frameHeight", fHeight);
-    add(ss, "seed", seed);
-    add(ss, "searchRadius", sRadius);
-    add(ss, "svmC", svmC);
-    add(ss, "svmBudgetSize", bSize);
-    for (auto feat: features) add(ss, "feature", feat);
+    _addConf(ss, "quietMode", quietMode);
+    _addConf(ss, "debugMode", debugMode);
+    _addConf(ss, "sequenceBasePath", sPath);
+    _addConf(ss, "resultsPath", rPath);
+    _addConf(ss, "sequenceName", sName);
+    _addConf(ss, "frameWidth", fWidth);
+    _addConf(ss, "frameHeight", fHeight);
+    _addConf(ss, "seed", seed);
+    _addConf(ss, "searchRadius", sRadius);
+    _addConf(ss, "svmC", svmC);
+    _addConf(ss, "svmBudgetSize", bSize);
+    for (auto feat: features) _addConf(ss, "feature", feat);
     return ss;    
 }
 

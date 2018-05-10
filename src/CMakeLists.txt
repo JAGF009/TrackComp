@@ -7,6 +7,8 @@ set(SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/MOTReader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PIXReader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TrackerStruck.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TrackerOpenCV.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TrackerFactory.cpp
     PARENT_SCOPE)
 
 set(HEADERS
@@ -21,4 +23,7 @@ set(HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/PIXReader.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TrackerBasic.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TrackerStruck.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TrackerOpenCV.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/TrackerFactory.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/EnumsConst.hpp
     PARENT_SCOPE)

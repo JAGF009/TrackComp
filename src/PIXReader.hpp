@@ -17,6 +17,7 @@ class PixReader: public DBReader
         std::string imageName(m_int number) const override;
         std::vector<pix::Rect> getBBFrame(m_int frame) const override;
         pix::Rect getBBFrameID(m_int frame, const std::string& id) const override;
+        m_int nFrames() const override { return m_db.size(); }
 
     friend std::ostream& operator<<(std::ostream&, const PixReader&);
 

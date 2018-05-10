@@ -19,6 +19,8 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/src")
 add_subdirectory("${PROJECT_SOURCE_DIR}/3rd_party")
 add_subdirectory("${PROJECT_SOURCE_DIR}/STRUCK")
 
+message("HEADERS" ${HEADERS})
+
 add_executable(tcomp ${SOURCE} ${HEADERS})
 
 target_link_libraries(tcomp ${OpenCV_LIBS})

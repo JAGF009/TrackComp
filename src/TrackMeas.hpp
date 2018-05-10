@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "Rect.hpp"
-#include "TrackerBasic.hpp"
+#include "TrackerFactory.hpp"
 #include "DBReader.hpp"
 
 namespace pix{
@@ -19,9 +19,6 @@ struct Comp
 
     double thresh;
 };
-        
-enum class DBType {VOC, MOT17, VOY17};
-enum class TrackerType {STRUCK, Re3, OpenCV};
 
 class TrackMeas
 {
@@ -39,11 +36,13 @@ class TrackMeas
 
     public:
         TrackMeas() = default;
-        TrackMeas(const std::string& path, DBType dt_type, TrackerType track_type);
+        TrackMeas(const std::string& path, pix::DBType dt_type, pix::TrackerType track_type);
         ~TrackMeas();
         void go();
-        double fScore(double);
-        double f1Score();
+        double fScore(double) const noexcept;
+        double f1Score() const noexcept;
+        double OTP(double) const noexcept;
+        double ATA() const noexcept;
 
 
     private:
