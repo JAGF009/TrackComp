@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 
 project(TComp)
 
@@ -8,8 +8,11 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
 find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(Threads REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 
@@ -23,5 +26,5 @@ message("HEADERS" ${HEADERS})
 
 add_executable(tcomp ${SOURCE} ${HEADERS})
 
-target_link_libraries(tcomp ${OpenCV_LIBS})
+target_link_libraries(tcomp ${OpenCV_LIBS} Threads::Threads)
 

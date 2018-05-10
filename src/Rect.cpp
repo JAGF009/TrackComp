@@ -35,6 +35,11 @@ std::ostream& operator<<(std::ostream& os, const pix::Rect& r)
     return os;
 }
 
+Point Rect::center() const 
+{
+    return Point(W() - X(), H() - Y());
+}
+
 cv::Rect Rect::toOpenCV() const
 {
     return cv::Rect(m_x, m_y, m_w, m_h);
@@ -96,6 +101,13 @@ Rect Rect::operator|(const Rect& lhs) const
 
 }
 
+Point Rect::movement(const Rect& old) const
+{
+    return Point(
+        ((float) ((old.center().x - center().x) + (old.upperLeft().x - upperLeft().x) + (old.bottomRight().x - bottomRight().x))) / 3,
+        ((float) ((old.center().y - center().y) + (old.upperLeft().y - upperLeft().y) + (old.bottomRight().y - bottomRight().y))) / 3
+    );
+}
 
 
 void Rect::_update_corners()

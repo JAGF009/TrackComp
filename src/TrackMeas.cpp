@@ -1,15 +1,104 @@
 #define SHOW___
 
 #include "TrackMeas.hpp"
+
+
+#ifndef SHOW___
+#include <thread>
+
+
+// FOR TERMINAL
+#include <stdio.h>
+#include <termios.h>
+#include <fcntl.h>
+
+class BufferToggle
+{
+    private:
+        struct termios oldAttr, newAttr;
+        int oldFlags, newFlags;
+        int fd = fileno(stdin);
+
+        /*
+         * Disables buffered input
+         */
+
+        void off(void)
+        {
+            // std::cout << "OFF BUFFERED error=";
+
+            int err = tcgetattr(fd, &oldAttr); //get the current terminal I/O structure
+            newAttr = oldAttr;
+            // std::cout << err << std::endl;
+
+            newAttr.c_iflag = 0; /* input mode */
+            newAttr.c_oflag = 0; /* output mode */
+            newAttr.c_lflag &= ~ICANON; /* line settings */
+            newAttr.c_cc[VMIN] = 1; /* minimum chars to wait for */
+            newAttr.c_cc[VTIME] = 1; /* minimum wait time */
+            oldFlags = fcntl(fd, F_GETFL, O_NONBLOCK);
+            tcsetattr(fd, 0, &newAttr); //Apply the new settings
+        }
+
+
+        /*
+         * Enables buffered input
+         */
+
+        void on(void)
+        {
+            // std::cout << "ON BUFFERED: error=";
+            int err = tcsetattr(fd, TCSANOW, &oldAttr);
+            // std::cout << err << std::endl;
+            fcntl(fd, F_SETFL, oldFlags);
+        }
+
+    public:
+        BufferToggle(){off();}
+        ~BufferToggle(){on();}
+
+        int getKey()
+        {
+            // std::cout << "GETTING KEY" << std::endl;
+            char ch;
+            struct timeval tv;
+            tv.tv_sec = 0;
+            tv.tv_usec = 10000; // small 0.01 msec delay
+            // std::cout << "LOOK" << std::endl;
+            int looked = select(1, NULL, NULL, NULL, &tv);
+            // std::cout << "LOOKED: " << looked << std::endl;
+
+
+            int error = (read(fd, &ch, 1) != 1);
+            // std::cout << "ERROR: " << error << std::endl;
+            return (error ? -1 : (int) ch);
+        }
+};
+
+void stop_in_thread(pix::TrackMeas* tm)
+{
+    BufferToggle bf;
+    while (!tm->stopped())
+    {
+        int erino = bf.getKey();
+        if (erino == 27) tm->stop();
+    }
+}
+
+#endif
+
+
 #include "PIXReader.hpp"
+
+#include <cstdio>
 
 
 #include <algorithm>
 #include <cmath>
 
+
 using namespace pix;
 using namespace std;
-
 
 std::string mul_string(const std::string& s, int n)
 {
@@ -42,39 +131,56 @@ TrackMeas::~TrackMeas()
 
 void TrackMeas::go()
 {
+#ifndef SHOW___
+    std::thread thread1 (stop_in_thread, this);
+    thread1.detach(); // I dont like to do this, but anyhow...
+#endif
+    std::cout << "PRESS ESC TO STOP AT ANY TIME." << std::endl;
+    pix::Rect oldBB, newBB;
     const int db_size = db->nFrames();
     int frame_number = 0;
     std::string name {db->imageName(frame_number)};
     image = cv::imread(name);
-    pix::Rect initBB = db->getBBFrameID(frame_number++, "Jose");
-    tracker->init_track(image, initBB);
+    oldBB = db->getBBFrameID(frame_number++, "Jose");
+    init_track(image, oldBB);
     while (1)
     {
         int n = 100 * frame_number / db_size;
-        std::cout << "\r[" << mul_string("#", n) << mul_string(" ", 100-n) << "]" << " " << n << "%";
+        std::cout << "\r ("<< frame_number << "/" << db_size << ") [" << mul_string("#", n) << mul_string(" ", 100-n) << "]" << " " << n << "%";
         std::cout.flush();
         name = db->imageName(frame_number); 
         if (name.empty()) break;
         image = cv::imread(name);
         auto realBB = db->getBBFrameID(frame_number++, "Jose");
-        
-        pix::Rect bbt = tracker->track(image);
-        newFrame(realBB, bbt);
+        pix::Rect newBB = tracker->track(image);
+
+        pix::Point m = newBB.movement(oldBB);
+        // std::cout << "Movement x: " << m.x << " y:" << m.y << std::endl;
+        newFrame(realBB, newBB); // To calculate the metrics
+
 #ifdef SHOW___
-        auto key = show(realBB, bbt);
-        if (key == 27) break;
+        show(realBB, newBB); // Allow escape key to stop the process cleanly       
 #endif
-        frame_number += 10;
+        frame_number += m_frameSkip;
+        oldBB = newBB;
+        if (m_stop) break;
     }
     std::cout << endl;
+    stop();
 }
 
-int TrackMeas::show(const Rect& gt, const Rect& tr)
+void TrackMeas::init_track(const cv::Mat& im, const pix::Rect& r)
+
+{
+    tracker->init_track(im, r);
+}
+
+void TrackMeas::show(const Rect& gt, const Rect& tr)
 {
     cv::rectangle(image, gt.toOpenCV(), cv::Scalar(255, 0, 0), 3);
     cv::rectangle(image, tr.toOpenCV(), cv::Scalar(0, 0, 255), 3);
     cv::imshow("m_name", image);
-    return cv::waitKey(1);
+    if(cv::waitKey(1) == 27) stop();
 }
 
 void TrackMeas::newFrame(const Rect& gt, const Rect& track)

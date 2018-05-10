@@ -19,8 +19,8 @@ struct Point
 
     friend std::ostream& operator<<(std::ostream& os, const Point& p);
 
-    m_int x;
-    m_int y;
+    float x;
+    float y;
 };
 
 class Rect{
@@ -35,6 +35,8 @@ class Rect{
         m_int top()   const {return upperLeft().y; }
         m_int right()  const {return bottomRight().x; }
         m_int bottom() const {return bottomRight().y; }
+
+        Point center() const;
 
         cv::Rect toOpenCV() const;
         static Rect fromOpenCV(const cv::Rect& from, const std::string& name);
@@ -69,6 +71,8 @@ class Rect{
         Rect operator&(const Rect& lhs) const;
         // Calculates the union of two rectangles;
         Rect operator|(const Rect& lhs) const;
+
+        Point movement(const Rect& lhs) const;
 
 
     private:
