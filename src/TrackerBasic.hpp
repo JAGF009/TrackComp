@@ -10,10 +10,18 @@ namespace pix
 {
     class TrackerInterface
     {
+
         public:
+            enum class Mode {Path, Image};
             virtual pix::Rect track(const cv::Mat&) = 0;
+            virtual pix::Rect track(const std::string&) = 0;
             virtual void init_track(const cv::Mat&, const pix::Rect) = 0;
+            virtual void init_track(const std::string&, const pix::Rect) = 0;
             virtual ~TrackerInterface() = default;
+            void setMode(Mode m)          { mode = m;    }
+            Mode getMode() const noexcept { return mode; }
+        private: 
+            Mode mode {Mode::Image};
     };
 }
 

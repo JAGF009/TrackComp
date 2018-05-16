@@ -2,8 +2,6 @@
 #include <fstream>
 #include "../3rd_party/ConfigFile.hpp"
 #include "../3rd_party/formated_string.hpp"
-// #include "3rd_party/ConfigFile.hpp"
-// #include "3rd_party/formated_string.hpp"
 
 using namespace std;
 using namespace pix;

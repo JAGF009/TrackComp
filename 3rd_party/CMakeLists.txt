@@ -4,6 +4,7 @@
 set(SOURCE 
     ${SOURCE}
     ${CMAKE_CURRENT_SOURCE_DIR}/ConfigFile.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/formated_string.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/filesystem.cpp
     PARENT_SCOPE)
 

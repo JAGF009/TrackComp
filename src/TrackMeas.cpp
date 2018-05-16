@@ -140,9 +140,21 @@ void TrackMeas::go()
     const int db_size = db->nFrames();
     int frame_number = 0;
     std::string name {db->imageName(frame_number)};
-    image = cv::imread(name);
+    
     oldBB = db->getBBFrameID(frame_number++, "Jose");
-    init_track(image, oldBB);
+    switch(tracker->getMode())
+    {
+        case pix::TrackerInterface::Mode::Image:
+        {
+            image = cv::imread(name);
+            init_track(image, oldBB);
+            break;
+        }  
+        case pix::TrackerInterface::Mode::Path:
+            tracker->init_track(name, oldBB);
+            break;
+    }
+    
     while (1)
     {
         int n = 100 * frame_number / db_size;
@@ -150,10 +162,20 @@ void TrackMeas::go()
         std::cout.flush();
         name = db->imageName(frame_number); 
         if (name.empty()) break;
-        image = cv::imread(name);
         auto realBB = db->getBBFrameID(frame_number++, "Jose");
-        pix::Rect newBB = tracker->track(image);
-
+        pix::Rect newBB;
+        switch(tracker->getMode())
+        {
+            case pix::TrackerInterface::Mode::Image:
+            {
+                image = cv::imread(name);
+                newBB = tracker->track(image);
+                break;
+            }  
+            case pix::TrackerInterface::Mode::Path:
+                newBB = tracker->track(name);
+                break;
+        }
         pix::Point m = newBB.movement(oldBB);
         // std::cout << "Movement x: " << m.x << " y:" << m.y << std::endl;
         newFrame(realBB, newBB); // To calculate the metrics

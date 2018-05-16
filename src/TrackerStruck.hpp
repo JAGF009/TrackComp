@@ -12,7 +12,9 @@ class TrackerStruck: public pix::TrackerInterface
     public: 
         TrackerStruck(std::istream& in);
         void init_track(const cv::Mat&, const pix::Rect) override;
+        void init_track(const std::string&, const pix::Rect) override;
         pix::Rect track(const cv::Mat&) override;
+        pix::Rect track(const std::string&) override;
         
 
     private: 

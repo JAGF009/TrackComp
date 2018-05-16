@@ -24,6 +24,11 @@ void TrackerStruck::init_track(const cv::Mat& im, const pix::Rect r)
     FloatRect fr(r.X() * m_scaleW, r.Y() * m_scaleH, r.W() * m_scaleW, r.H() * m_scaleH);
     m_p_tracker->Initialise(m_resized_im, fr);
 }
+void TrackerStruck::init_track(const std::string& path, const pix::Rect r)
+{
+    cv::Mat im = cv::imread(path, 0);
+    init_track(im, r);
+}
 
 pix::Rect TrackerStruck::track(const cv::Mat& im)
 {
@@ -33,4 +38,10 @@ pix::Rect TrackerStruck::track(const cv::Mat& im)
 
     auto fr = m_p_tracker->GetBB();
     return pix::Rect(fr.XMin() / m_scaleW, fr.YMin() / m_scaleH, fr.Width() / m_scaleW, fr.Height() / m_scaleH, m_name);
+}
+
+pix::Rect TrackerStruck::track(const std::string& path)
+{
+    cv::Mat im = cv::imread(path, 0);
+    track(im);
 }
