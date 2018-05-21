@@ -1,5 +1,6 @@
 #include "Rect.hpp"
 #include <algorithm>
+#include <cmath>
 
 
 using namespace pix;
@@ -17,11 +18,12 @@ Rect::Rect()
     m_w = 0;
     m_h = 0;
     m_id = "no-id";
+    m_real_id = "no-id";
     _update_corners();
 }
 
 Rect::Rect(int32_t x, int32_t y, int32_t w, int32_t h, const std::string& id):
-        m_x(x), m_y(y), m_w(w), m_h(h), m_id(id) {
+        m_x(x), m_y(y), m_w(w), m_h(h), m_id(id), m_real_id(id) {
             _update_corners();
         }
 Rect::Rect(Point aupperLeft, Point abottomRight, const std::string& id)
@@ -66,6 +68,11 @@ double Rect::F1Intermediate(const Rect& lhs) const
     double p = ((double) uni.area()) / tr_a;
     double r = ((double) uni.area()) / gt_a;
     return p * r / (p + r);
+}
+
+double Rect::distance(const Rect& lhs) const
+{
+    return sqrt(pow(center().x - lhs.center().x, 2) + pow(center().y - lhs.center().y, 2));
 }
 
 Rect Rect::operator&(const Rect& lhs) const
@@ -126,4 +133,12 @@ void Rect::_update_corners()
     }
     m_upperLeft = Point(m_x, m_y);
     m_bottomRight = Point(m_x + m_w, m_y + m_h);
+    m_id = m_real_id;
+    m_invalid = false;
+}
+
+void Rect::_check_valid()
+{
+    if (m_w > 0 && m_h > 0)
+        _update_corners();
 }

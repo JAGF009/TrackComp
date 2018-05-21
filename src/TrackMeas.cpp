@@ -8,6 +8,7 @@
 
 
 // FOR TERMINAL
+#include <unistd.h>
 #include <stdio.h>
 #include <termios.h>
 #include <fcntl.h>
@@ -142,11 +143,14 @@ void TrackMeas::go()
     std::string name {db->imageName(frame_number)};
     
     oldBB = db->getBBFrameID(frame_number++, "Jose");
+    image = cv::imread(name);
+    m_width = image.cols;
+    m_height = image.rows;
     switch(tracker->getMode())
     {
         case pix::TrackerInterface::Mode::Image:
         {
-            image = cv::imread(name);
+            
             init_track(image, oldBB);
             break;
         }  
@@ -158,17 +162,17 @@ void TrackMeas::go()
     while (1)
     {
         int n = 100 * frame_number / db_size;
-        std::cout << "\r ("<< frame_number << "/" << db_size << ") [" << mul_string("#", n) << mul_string(" ", 100-n) << "]" << " " << n << "%";
-        std::cout.flush();
+        // std::cout << "\r ("<< frame_number << "/" << db_size << ") [" << mul_string("#", n) << mul_string(" ", 100-n) << "]" << " " << n << "%";
+        // std::cout.flush();
         name = db->imageName(frame_number); 
         if (name.empty()) break;
         auto realBB = db->getBBFrameID(frame_number++, "Jose");
         pix::Rect newBB;
+        image = cv::imread(name);
         switch(tracker->getMode())
         {
             case pix::TrackerInterface::Mode::Image:
             {
-                image = cv::imread(name);
                 newBB = tracker->track(image);
                 break;
             }  
@@ -201,6 +205,8 @@ void TrackMeas::show(const Rect& gt, const Rect& tr)
 {
     cv::rectangle(image, gt.toOpenCV(), cv::Scalar(255, 0, 0), 3);
     cv::rectangle(image, tr.toOpenCV(), cv::Scalar(0, 0, 255), 3);
+    real_traj.draw(image, cv::Scalar(255, 0, 0));
+    detectec_traj.draw(image, cv::Scalar(0, 0, 255));
     cv::imshow("m_name", image);
     if(cv::waitKey(1) == 27) stop();
 }
@@ -208,6 +214,7 @@ void TrackMeas::show(const Rect& gt, const Rect& tr)
 void TrackMeas::newFrame(const Rect& gt, const Rect& track)
 {
     if (!gt.valid() && !track.valid()) return;
+    
     n_frames ++;
     if (!gt.valid())
     {
@@ -221,8 +228,11 @@ void TrackMeas::newFrame(const Rect& gt, const Rect& track)
         return;
     }
     n_gts++;
-    m_fScore.push_back(gt.IoU(track));
-    m_f1Score.push_back(gt.F1Intermediate(track));
+    m_fScore.emplace_back(gt.IoU(track));
+    m_f1Score.emplace_back(gt.F1Intermediate(track));
+    real_traj.push(gt);
+    detectec_traj.push(track);
+    m_distances.emplace_back(gt.distance(track));
 }
 
 
@@ -254,4 +264,11 @@ double TrackMeas::ATA() const noexcept
 {
     if (n_frames == 0) return 0;
     return std::accumulate(m_fScore.begin(), m_fScore.end(), (double) 0) / n_frames;
+}
+
+double TrackMeas::Deviation() const noexcept
+{
+    if (n_frames == 0) return 0;
+    double norm {sqrt(pow(m_width, 2)+ pow(m_height, 2))};
+    return (1 -(std::accumulate(m_distances.begin(), m_distances.end(), (double) 0) / norm) / n_frames);
 }

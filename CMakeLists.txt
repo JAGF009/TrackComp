@@ -37,6 +37,7 @@ set(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 add_subdirectory("${PROJECT_SOURCE_DIR}/src")
 add_subdirectory("${PROJECT_SOURCE_DIR}/3rd_party")
 add_subdirectory("${PROJECT_SOURCE_DIR}/STRUCK")
+# add_subdirectory("${PROJECT_SOURCE_DIR}/tclap")
 
 #message("HEADERS" ${HEADERS})
 

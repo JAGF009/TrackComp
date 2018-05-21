@@ -6,6 +6,7 @@
 #include "../3rd_party/formated_string.hpp"
 
 
+
 using namespace pix;
 
 std::string join(const std::vector<std::string>& v, char c)
@@ -59,9 +60,17 @@ const std::string ZMQEasyClient::OK = "OK";
 const std::string ZMQEasyClient::INIT = "INIT";
 const std::string ZMQEasyClient::KEEP = "KEEP";
 
-TrackerRe3::TrackerRe3()
+TrackerRe3::TrackerRe3() : proc({"python", "/home/dino/TrackingResearch/re3-tensorflow/demo/demo_zmq.py"}, subprocess::output{subprocess::PIPE}, subprocess::error{subprocess::PIPE})
 {
     setMode(TrackerInterface::Mode::Path);
+    std::cout << "Process opened" << std::endl;
+}
+
+TrackerRe3::~TrackerRe3()
+{
+    ZMQEasyClient client("ipc:///tmp/qwiduhausyhd:5555");
+    auto z = client.send(ZMQEasyClient::END); // This could block eternally, I dont know if it is ok to assume that the process is alive.
+    proc.kill(); // In case process did not end, we sent sig 9 to kill it, wont do anything if already killed.
 }
 
 void TrackerRe3::init_track(const cv::Mat& im, const pix::Rect r)
@@ -78,11 +87,11 @@ void TrackerRe3::init_track(const std::string& path, const pix::Rect r)
         r.id(), 
         std::to_string(r.left()),
         std::to_string(r.top()),
-        std::to_string(r.bottom()),
-        std::to_string(r.right())}, 
+        std::to_string(r.right()),
+        std::to_string(r.bottom())}, 
         ',');
     std::string z = client.send(s);
-    std::cout << "RESPONSE: " << z << std::endl;
+    // std::cout << "INIT RESPONSE: " << z << std::endl;
 }
 
 pix::Rect TrackerRe3::track(const std::string& path)
@@ -94,16 +103,20 @@ pix::Rect TrackerRe3::track(const std::string& path)
         ',');
     std::string z = client.send(s);
     auto v = explode(z, ',');
+    pix::Rect rect;
     if (v[0]==client.OK)
     {
-        std::cout << v[0] << " " << v[1] << " " << v[2]<< " " << v[3]<< " " << v[4] << std::endl;
-        z = client.send(ZMQEasyClient::END);
-        std::cout << z << std::endl;
-    } else {
-        std::cout << z << std::endl;
+        // std::cout << v[0] << " " << v[1] << " " << v[2]<< " " << v[3]<< " " << v[4] << std::endl;
+        rect.setX(std::stoi(v[1]));
+        rect.setY(std::stoi(v[2]));
+        rect.setW(std::stoi(v[3]));
+        rect.setH(std::stoi(v[4]));
+
+        // std::cout << "RECT: " << rect.X() << " " << rect.Y() << " " << rect.W() << " " << rect.H() << std::endl;
     }
-        
-    return pix::Rect(0,0,0,0,"no");
+    // std::cout << z << std::endl;
+
+    return rect;
 }  
 pix::Rect TrackerRe3::track(const cv::Mat&)
 {

@@ -1,6 +1,7 @@
 set(SOURCE 
     ${SOURCE}
     ${CMAKE_CURRENT_SOURCE_DIR}/Rect.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Trajectory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TrackMeas.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pugixml.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/xmlhandler.cpp
@@ -15,6 +16,7 @@ set(SOURCE
 set(HEADERS
     ${HEADERS}
     ${CMAKE_CURRENT_SOURCE_DIR}/Rect.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Trajectory.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TrackMeas.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pugixml.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pugiconfig.hpp

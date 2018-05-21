@@ -3,6 +3,7 @@
 #include <iostream>
 #include "TrackerStruck.hpp"
 #include "TrackerOpenCV.hpp"
+#include "TrackerRe3.hpp"
 
 std::unique_ptr<pix::TrackerInterface> pix::make_tracker(pix::TrackerType tt)
 {
@@ -17,7 +18,7 @@ std::unique_ptr<pix::TrackerInterface> pix::make_tracker(pix::TrackerType tt)
         break;
     }
     case pix::TrackerType::Re3:
-        p = nullptr;
+        p = std::make_unique<TrackerRe3>();
         break;
     case pix::TrackerType::OpenCV_TLD:
     case pix::TrackerType::OpenCV_KCF:

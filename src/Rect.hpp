@@ -17,6 +17,8 @@ struct Point
     Point(m_int ax, m_int ay): x(ax), y(ay) {}
     Point(): x(0), y(0) {}
 
+    cv::Point2i toOpenCV() {return cv::Point2i(x, y);}
+
     friend std::ostream& operator<<(std::ostream& os, const Point& p);
 
     float x;
@@ -45,16 +47,16 @@ class Rect{
 
 
         m_int X() const {return m_x;}
-        void setX(m_int x) {m_x=x;}
+        void setX(m_int x) {m_x=x; _check_valid();}
 
         m_int Y() const {return m_y;}
-        void setY(m_int y) {m_y=y;}
+        void setY(m_int y) {m_y=y;  _check_valid();}
 
         m_int W() const {return m_w;}
-        void setW(m_int w) {m_w=w;}
+        void setW(m_int w) {m_w=w; _check_valid();}
 
         m_int H() const {return m_h;}
-        void setH(m_int h) {m_h=h;}
+        void setH(m_int h) {m_h=h; _check_valid();}
 
         bool valid() const {return !m_invalid;}
 
@@ -67,6 +69,8 @@ class Rect{
 
         double F1Intermediate(const Rect& lhs) const;
 
+        double distance(const Rect& lhs) const;
+
         // Calculates the intersection of two rectangles;
         Rect operator&(const Rect& lhs) const;
         // Calculates the union of two rectangles;
@@ -78,11 +82,13 @@ class Rect{
     private:
 
         void _update_corners();
+        void _check_valid();
 
 
         Point m_upperLeft;
         Point m_bottomRight;
         std::string m_id;
+        std::string m_real_id;
         m_int m_x;
         m_int m_y;
         m_int m_w;
