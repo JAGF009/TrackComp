@@ -5,7 +5,13 @@ common interface to trackers and data bases.
 
 Provides readers for PascalVOC-like databases and [MOT2017](https://motchallenge.net/) database. Currently working on [VOT2017](http://www.votchallenge.net/vot2017/dataset.html) database.
 
-I am currently working on STRUCK and plan to include all OpenCV trackers and Re3 Tracker.
+Includes STRUCK, all OpenCV trackers and Re3 Tracker via ZeroMQ
+
+### Dependecies
+
+[ZeroMQ](http://zeromq.org/) to talk with the python process for Re3.
+
+[TCLAP](http://tclap.sourceforge.net/) for command line argument parsing.
 
 ### Building steps
 
