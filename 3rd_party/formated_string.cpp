@@ -1,5 +1,8 @@
 #include "formated_string.hpp"
 
+#include <memory>    // For std::unique_ptr
+#include <sstream>
+
 std::string string_format(const std::string fmt_str, ...) {
     int final_n, n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
     std::unique_ptr<char[]> formatted;
@@ -31,4 +34,15 @@ const std::vector<std::string> explode(const std::string& s, const char& c)
 	if(buff != "") v.push_back(buff);
 	
 	return v;
+}
+
+std::string join(const std::vector<std::string>& v, const char& c)
+{
+    std::stringstream ss;
+    for (int i = 0; i!=v.size() -1; i++)
+    {
+        ss << v[i] << c;
+    }
+    ss << v.back();
+    return ss.str();
 }

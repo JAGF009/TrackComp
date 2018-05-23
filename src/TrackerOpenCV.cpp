@@ -4,10 +4,10 @@ using namespace std;
 using namespace cv;
 using namespace pix;
 
-TrackerOpenCV::TrackerOpenCV(const pix::TrackerType type)
+TrackerOpenCV::TrackerOpenCV(const pix::TrackerType type) : m_type(type)
 
 {
-    switch (type)
+    switch (m_type)
     {
     case TrackerType::OpenCV_TLD:
         tracker = TrackerTLD::create();
@@ -51,5 +51,34 @@ pix::Rect TrackerOpenCV::track(const std::string& path)
 {
     cv::Mat im = cv::imread(path, 0);
     return track(im);
+}
+
+cv::Scalar TrackerOpenCV::color() 
+{
+    switch (m_type)
+    {
+    case TrackerType::OpenCV_TLD:
+
+        return cv::Scalar(216, 237, 26);
+
+    case TrackerType::OpenCV_KCF:
+
+        return cv::Scalar(9, 189, 239);
+
+    case TrackerType::OpenCV_MF:
+
+        return cv::Scalar(252, 240, 7);
+
+    case TrackerType::OpenCV_BOOSTING:
+
+        return cv::Scalar(33, 8, 76);
+
+    case TrackerType::OpenCV_MIL:
+
+        return cv::Scalar(19, 239, 213);
+
+    default:
+        return cv::Scalar(0, 0, 0);
+    }
 }
 

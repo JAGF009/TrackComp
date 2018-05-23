@@ -18,6 +18,7 @@ namespace pix
             virtual void init_track(const cv::Mat&, const pix::Rect) = 0;
             virtual void init_track(const std::string&, const pix::Rect) = 0;
             virtual ~TrackerInterface() = default;
+            virtual cv::Scalar color() = 0;
             void setMode(Mode m)          { mode = m;    }
             Mode getMode() const noexcept { return mode; }
         private: 

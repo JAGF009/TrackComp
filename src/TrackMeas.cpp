@@ -3,6 +3,7 @@
 #include "TrackMeas.hpp"
 
 
+
 #ifndef SHOW___
 #include <thread>
 
@@ -94,6 +95,7 @@ void stop_in_thread(pix::TrackMeas* tm)
 #include <cstdio>
 
 
+
 #include <algorithm>
 #include <cmath>
 
@@ -118,18 +120,30 @@ void drawRect(cv::Mat& im, pix::Rect r, cv::Scalar color = cv::Scalar(0, 0, 0), 
 }
 
 
-TrackMeas::TrackMeas(const std::string& path, pix::DBType dt_type, pix::TrackerType track)
+TrackMeas::TrackMeas(const std::string& path, const std::string& id, pix::DBType db_type, pix::TrackerType track) : m_id(id)
 {
 
     tracker = pix::make_tracker(track);
-    db = std::make_unique<PixReader>(path);
+    db = pix::make_dbreader(db_type, path);
 }
 
 TrackMeas::~TrackMeas()
 {
     cv::destroyAllWindows();
 }
+bool TrackMeas::idInFrame(m_int frame, const std::string& id, std::unordered_set<std::string>& ids) const
+{
+    if (frame > db->nFrames()) throw std::runtime_error("Frame too big");
+    auto boxes = db->getBBFrame(frame);
+    for (auto box : boxes)
+    {
+        ids.insert(box.id());
+        if (box.id() == id)
+            return true;
+    }
 
+    return false;
+}
 void TrackMeas::go()
 {
 #ifndef SHOW___
@@ -137,27 +151,48 @@ void TrackMeas::go()
     thread1.detach(); // I dont like to do this, but anyhow...
 #endif
     std::cout << "PRESS ESC TO STOP AT ANY TIME." << std::endl;
-    pix::Rect oldBB, newBB;
     const int db_size = db->nFrames();
-    int frame_number = 0;
-    std::string name {db->imageName(frame_number)};
+    int frame_number = -1;
+    std::unordered_set<std::string> ids{};
+    try
+    {
+        while (!idInFrame(++frame_number, m_id, ids)) {}
+    } catch (std::runtime_error)
+    {
+        TermStyle ts;
+        std::cout << ts.sfatal(std::string ("ID '" + m_id + "' does not exist in the data base!")) << std::endl;
+        std::cout << "Posible id values are:" << std::endl;
+        for (auto s : ids) std::cout << "\t" << s << std::endl;
+        std::cout << std::endl;
+        return;
+    }
     
-    oldBB = db->getBBFrameID(frame_number++, "Jose");
+    std::string name = db->imageName(frame_number);
+
+    pix::Rect oldBB;
+    oldBB = db->getBBFrameID(frame_number++, m_id);
     image = cv::imread(name);
     m_width = image.cols;
     m_height = image.rows;
+
+    std::cout << "m_width: " << m_width << " m_height: " << m_height << std::endl;
+
     switch(tracker->getMode())
     {
         case pix::TrackerInterface::Mode::Image:
         {
-            
+            std::cout << "Mode image!" << std::endl;
             init_track(image, oldBB);
             break;
         }  
         case pix::TrackerInterface::Mode::Path:
             tracker->init_track(name, oldBB);
             break;
+        default: 
+            std::cout << "Unkwonw mode!" << std::endl;
     }
+
+    std::cout << "Tracker initialized" << std::endl;
     
     while (1)
     {
@@ -166,7 +201,7 @@ void TrackMeas::go()
         // std::cout.flush();
         name = db->imageName(frame_number); 
         if (name.empty()) break;
-        auto realBB = db->getBBFrameID(frame_number++, "Jose");
+        auto realBB = db->getBBFrameID(frame_number++, m_id);
         pix::Rect newBB;
         image = cv::imread(name);
         switch(tracker->getMode())
@@ -180,8 +215,7 @@ void TrackMeas::go()
                 newBB = tracker->track(name);
                 break;
         }
-        pix::Point m = newBB.movement(oldBB);
-        // std::cout << "Movement x: " << m.x << " y:" << m.y << std::endl;
+        pix::Point m = newBB.movement(oldBB); // Unused.
         newFrame(realBB, newBB); // To calculate the metrics
 
 #ifdef SHOW___
@@ -201,14 +235,14 @@ void TrackMeas::init_track(const cv::Mat& im, const pix::Rect& r)
     tracker->init_track(im, r);
 }
 
-void TrackMeas::show(const Rect& gt, const Rect& tr)
+void TrackMeas::show(const Rect& gt, const Rect& tr, int time)
 {
-    cv::rectangle(image, gt.toOpenCV(), cv::Scalar(255, 0, 0), 3);
-    cv::rectangle(image, tr.toOpenCV(), cv::Scalar(0, 0, 255), 3);
-    real_traj.draw(image, cv::Scalar(255, 0, 0));
-    detectec_traj.draw(image, cv::Scalar(0, 0, 255));
+    cv::rectangle(image, gt.toOpenCV(), cv::Scalar(255, 255, 255), 3);
+    cv::rectangle(image, tr.toOpenCV(), tracker->color(), 3);
+    real_traj.draw(image, cv::Scalar(255, 255, 255));
+    detectec_traj.draw(image, tracker->color());
     cv::imshow("m_name", image);
-    if(cv::waitKey(1) == 27) stop();
+    if(cv::waitKey(time) == 27) stop();
 }
 
 void TrackMeas::newFrame(const Rect& gt, const Rect& track)
@@ -219,12 +253,14 @@ void TrackMeas::newFrame(const Rect& gt, const Rect& track)
     if (!gt.valid())
     {
         n_false_positives++;
+        detectec_traj.push(track);
         return;
     }
     if (!track.valid())
     {
         n_gts++;
         n_false_negatives++;
+        real_traj.push(gt);
         return;
     }
     n_gts++;
@@ -251,7 +287,13 @@ double TrackMeas::f1Score() const noexcept
 {
     return 0;
 }
-
+double TrackMeas::OTA(double threshold) const noexcept
+{
+    if (n_gts == 0) return 0;
+    long int tp = std::count_if(m_fScore.begin(), m_fScore.end(), Comp(threshold));
+    m_int local_false_positives = n_false_positives + m_fScore.size() - tp;
+    return 1 - (((double) n_false_negatives + (double) local_false_positives) / (double) n_gts);
+}
 double TrackMeas::OTP(double threshold) const noexcept
 {
     auto ms = std::count_if(m_fScore.begin(), m_fScore.end(), Comp(threshold));

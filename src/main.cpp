@@ -3,103 +3,66 @@
 #include "TrackerRe3.hpp"
 
 #include <zmq.hpp>
-
+#include "human.hpp" // To convert from user string to enumeration and viceversa.
 #include <tclap/CmdLine.h>
 
-bool iequals(const std::string& a, const std::string& b)
-{
-    unsigned int sz = a.size();
-    if (b.size() != sz)
-        return false;
-    for (unsigned int i = 0; i < sz; ++i)
-        if (tolower(a[i]) != tolower(b[i]))
-            return false;
-    return true;
-}
+#include "../3rd_party/formated_string.hpp"
 
-
-std::string show_user(pix::TrackerType tt)
-{
-    ::std::string s{""};
-    switch (tt){
-        case pix::TrackerType::STRUCK: 
-            s = "STRUCK";
-            break;
-        case pix::TrackerType::Re3:
-            s = "Re3";
-            break;
-        case pix::TrackerType::OpenCV_TLD:
-            s = "TLD";
-            break;
-        case pix::TrackerType::OpenCV_KCF:
-            s = "KCF";
-            break;
-        case pix::TrackerType::OpenCV_MF:
-            s = "MedianFlow";
-            break;
-        case pix::TrackerType::OpenCV_BOOSTING:
-            s = "Boosting";
-            break;
-        case pix::TrackerType::OpenCV_MIL:
-            s = "MIL";
-            break;
-        }
-    return s;
-}
-
-pix::TrackerType from_user(const std::string& s)
-{
-    pix::TrackerType tt;
-    if (iequals(s, "STRUCK"))
-        tt = pix::TrackerType::STRUCK;
-    else if (iequals(s, "Re3"))
-        tt = pix::TrackerType::Re3;
-    else if (iequals(s, "KCF"))
-        tt = pix::TrackerType::OpenCV_KCF;
-    else if (iequals(s, "MIL"))
-        tt = pix::TrackerType::OpenCV_MIL;
-    else if (iequals(s, "MedianFlow") || iequals(s, "MF"))
-        tt = pix::TrackerType::OpenCV_MF;
-    else if (iequals(s, "TLD"))
-        tt = pix::TrackerType::OpenCV_TLD;
-    else if (iequals(s, "BOOSTING"))
-        tt = pix::TrackerType::OpenCV_BOOSTING;
-    else
-    {
-        std::cout << "TRACKER SPECIFIED NOT KNOWN:" << s << " USING STRUCK." << std::endl;
-        tt = pix::TrackerType::STRUCK;
-    }
-        
-    return tt;
-}
 
 int main(int argc, char** argv)
 {
     
     TCLAP::CmdLine cmd("Tracking comparator", ' ', "1.0");
 
-    TCLAP::ValueArg<std::string> trackerType("t", "tracker", "Tracker to use:\n      One of:\n\tSTRUCK\n\tRe3\n\tMIL\n\tMF\n\tKCF\n\tTLD\n\tBOOSTING", false, "STRUCK", "string");
-    TCLAP::ValueArg<int> frameSkip("f", "frameskip", "Number of frames to skip", false, 0, "int");
-    TCLAP::ValueArg<std::string> numDB("n", "numberDB", "Number of the clip to use", true, "5", "string");
+    TCLAP::UnlabeledValueArg<std::string> pathFilesArg("path", "Path of the data base to be used", true, "", "path");
+
+    TCLAP::ValueArg<std::string> idArg("", "id", "Identificator of the track", true, "0", "string");
+
+    std::vector<std::string> trackers{"STRUCK", "Re3", "MIL", "KCF", "TLD", "BOOSTING"};
+    TCLAP::ValuesConstraint<std::string> allowedTrackers(trackers);
+    TCLAP::ValueArg<std::string> trackerTypeArg("t", "", "Tracker to use", true, "STRUCK", &allowedTrackers);
+
+    TCLAP::SwitchArg allTrackers("a", "all", "Set this if you want to run the secuence in all the trackers", false);
+
+    std::vector<std::string> dbs{"VOC", "MOT", "VOT"};
+    TCLAP::ValuesConstraint<std::string> allowedDBs(dbs);
+    TCLAP::ValueArg<std::string> DBArg("d", "DB", "Data base to use", false, "VOC", &allowedDBs);
+
+    TCLAP::ValueArg<int> frameSkipArg("f", "frameskip", "Number of frames to skip", false, 0, "int");
     
-    cmd.add(numDB);
-    cmd.add(trackerType);
-    cmd.add(frameSkip);
+    
+    cmd.add(frameSkipArg);
+    cmd.add(idArg);
+    cmd.add(DBArg);
+    cmd.xorAdd(trackerTypeArg, allTrackers);
+    cmd.add(pathFilesArg);
+    
 
     cmd.parse(argc, argv);
 
-    std::string t = trackerType.getValue();
-    
-    pix::TrackMeas a("/home/dino/TrackingResearch/DB/final/ceil-"+numDB.getValue()+"/", pix::DBType::VOC, from_user(trackerType.getValue()));
+    if (!allTrackers.getValue())
+    {
+        std::cout << "PATH TO FILE     -> " << pathFilesArg.getValue() << std::endl;
+        std::cout << "ID to track      -> " << idArg.getValue() << std::endl;
+        std::cout << "Tracker          -> " << show_user(from_user_t(trackerTypeArg.getValue())) << std::endl;
+        std::cout << "Data base type   -> " << show_user(from_user_db(DBArg.getValue())) << std::endl;
+        std::cout << "Frames to skip   -> " << frameSkipArg.getValue() << std::endl;
+        
+        pix::TrackMeas a(pathFilesArg.getValue(), idArg.getValue(), from_user_db(DBArg.getValue()), from_user_t(trackerTypeArg.getValue()));
+        
+        a.setFrameSkip(frameSkipArg.getValue());
+        a.go();
 
-    std::cout << "Tracker is: " << show_user(from_user(trackerType.getValue())) << std::endl;
-    std::cout << "Skiping: " << frameSkip.getValue() << " frames." << std::endl;
-    
-    a.setFrameSkip(frameSkip.getValue());
-    a.go();
-    std::cout << "METRIC FScore    -> " << a.fScore(0.5) << std::endl;
-    std::cout << "METRIC OTP       -> " << a.OTP(0.5) << std::endl;
-    std::cout << "METRIC ATA       -> " << a.ATA() << std::endl;
-    std::cout << "METRIC DEVIATION -> " << a.Deviation() << std::endl;
+        std::cout << "FScore    -> " << a.fScore(0.5) << std::endl;
+        std::cout << "OTA       -> " << a.OTA(0.5) << std::endl;
+        std::cout << "OTP       -> " << a.OTP(0.5) << std::endl;
+        std::cout << "ATA       -> " << a.ATA() << std::endl;
+        std::cout << "DEVIATION -> " << a.Deviation() << std::endl;
+    }
+    else 
+    {
+        std::cout << "RUNNING SEQUENCE IN ALL TRACKERS" << std::endl;
+        std::cout << "RESULTS WILL BE SAVED ON: " << join(explode(pathFilesArg.getValue(), '/'), '-') + ".csv" << std::endl;
+    }
     return 0;
 }

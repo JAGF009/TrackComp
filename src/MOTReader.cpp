@@ -101,7 +101,7 @@ void MOTReader::_readGroundTruth(const string& path)
             
         }
         gt.close();
-        std::cout << "Total number of boxes: " << c <<std::endl;
+        // std::cout << "Total number of boxes: " << c <<std::endl;
     }
     else{
         std::cout << "Unable to open file" << std::endl;

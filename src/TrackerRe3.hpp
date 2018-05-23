@@ -15,5 +15,6 @@ namespace pix
             pix::Rect track(const std::string&) override;
             void init_track(const cv::Mat&, const pix::Rect) override;
             void init_track(const std::string&, const pix::Rect) override;
+            cv::Scalar color() override { return cv::Scalar(241, 56, 255); }
     };
 }

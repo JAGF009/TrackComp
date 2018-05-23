@@ -45,7 +45,7 @@ ConfigFile::ConfigFile(std::string const& configFile) {
     name  = trim(line.substr(0,posEqual));
     value = trim(line.substr(posEqual+1));
 
-    std::cout << inSection+'/'+name << " = " << value << std::endl;
+    // std::cout << inSection+'/'+name << " = " << value << std::endl;
     
     content_[inSection+'/'+name]=value;
   }

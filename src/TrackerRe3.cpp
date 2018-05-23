@@ -9,17 +9,6 @@
 
 using namespace pix;
 
-std::string join(const std::vector<std::string>& v, char c)
-{
-    std::stringstream ss;
-    for (int i = 0; i!=v.size() -1; i++)
-    {
-        ss << v[i] << c;
-    }
-    ss << v.back();
-    return ss.str();
-}
-
 class ZMQEasyClient 
 {
     const std::string dir;

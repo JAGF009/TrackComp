@@ -8,13 +8,17 @@ using namespace pix;
 PixReader::PixReader(const string &path)
 {
     if (path.back() != '/')
-        throw std::runtime_error("IN 'PixReader(const string& path)' path has to be a directory");
+        throw std::runtime_error("IN 'PixReader(const string& path)' path has to be a directory. ie end with /");
     if (exists(path + "xmls/"))
         xmls.load(path + "xmls/");
+    else
+        throw std::runtime_error(path + "xmls/ does not exist");
+       
 
     m_int frame_number{0};
 
     string name{xmls.imageFullName(frame_number)};
+
     while (exists(name))
     {
         vector<Rect> v;
@@ -43,15 +47,13 @@ string PixReader::imageName(m_int number) const
 
 vector<Rect> PixReader::getBBFrame(m_int frame) const
 {
-/*     vector<Rect> v;
-    BoxesMap rs = xmls.read(frame);
-    for (auto it = rs.cbegin(); it != rs.cend(); it++)
+    try
     {
-        for (auto r : it->second)
-            v.push_back(r);
+        return m_db.at(frame).boxes;
+    } catch (...)
+    {
+        return vector<Rect>{};
     }
-    return v; */
-    return m_db.at(frame).boxes;
 }
 
 Rect PixReader::getBBFrameID(m_int frame, const string &id) const

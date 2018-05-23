@@ -2,11 +2,11 @@
 #define TRACKMEAS_H
 #include <vector>
 #include <memory>
+#include <unordered_set>
 #include <opencv2/opencv.hpp>
 
 #include "Rect.hpp"
-#include "TrackerFactory.hpp"
-#include "DBReader.hpp"
+#include "Factory.hpp"
 #include "Trajectory.hpp"
 
 namespace pix{
@@ -33,6 +33,7 @@ class TrackMeas
         m_int m_width{0};
         m_int m_height{0};
         bool m_stop{false};
+        std::string m_id;
         std::unique_ptr<DBReader> db;
         std::unique_ptr<pix::TrackerInterface> tracker;
         cv::Mat image;
@@ -44,18 +45,21 @@ class TrackMeas
 
     public:
         TrackMeas() = default;
-        TrackMeas(const std::string& path, pix::DBType dt_type, pix::TrackerType track_type);
+        TrackMeas(const std::string& path, const std::string& id, pix::DBType dt_type, pix::TrackerType track_type);
         ~TrackMeas();
 
-        m_int frameSkip() const noexcept;
-        void setFrameSkip(m_int fs) noexcept { m_frameSkip = fs;}
+        m_int frameSkip() const noexcept { return m_frameSkip; } 
+        void setFrameSkip(m_int fs) noexcept { m_frameSkip = fs; }
         void stop() noexcept { m_stop = true; }
         bool stopped() const noexcept { return m_stop; }
+
+        bool idInFrame(m_int, const std::string&, std::unordered_set<std::string>&) const;
 
         void init_track(const cv::Mat&, const pix::Rect&);
         void go();
         double fScore(double) const noexcept;
         double f1Score() const noexcept;
+        double OTA(double) const noexcept;
         double OTP(double) const noexcept;
         double ATA() const noexcept;
         double Deviation() const noexcept;
@@ -63,7 +67,7 @@ class TrackMeas
 
     private:
 
-        void show(const pix::Rect&, const pix::Rect&);
+        void show(const pix::Rect&, const pix::Rect&, int time = 1);
         void newFrame(const pix::Rect& = pix::Rect(), const pix::Rect& = pix::Rect());
 };
 

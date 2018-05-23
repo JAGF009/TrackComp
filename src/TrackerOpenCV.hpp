@@ -18,9 +18,11 @@ class TrackerOpenCV : public pix::TrackerInterface
         void init_track(const std::string&, const pix::Rect) override;
         pix::Rect track(const cv::Mat&) override;
         pix::Rect track(const std::string&) override;
+        cv::Scalar color() override;
 
     private: 
         cv::Ptr<cv::Tracker> tracker;
+        pix::TrackerType m_type;
 };
 }
 

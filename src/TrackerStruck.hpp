@@ -15,6 +15,7 @@ class TrackerStruck: public pix::TrackerInterface
         void init_track(const std::string&, const pix::Rect) override;
         pix::Rect track(const cv::Mat&) override;
         pix::Rect track(const std::string&) override;
+        cv::Scalar color() override { return cv::Scalar(57, 237, 26); }
         
 
     private: 
