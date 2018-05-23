@@ -49,7 +49,7 @@ Includes STRUCK, all OpenCV trackers and Re3 Tracker via ZeroMQ
 
 ### Dependecies
 
-[ZeroMQ](http://zeromq.org/) to talk with the python process for Re3.
+[ZeroMQ](http://zeromq.org/) to talk with the Python process for Re3.
 
 [TCLAP](http://tclap.sourceforge.net/) for command line argument parsing.
 
@@ -58,13 +58,11 @@ Includes STRUCK, all OpenCV trackers and Re3 Tracker via ZeroMQ
     mkdir build && cd build
     cmake ..
     make -j`nproc`
-    ./tcomp
 
 If you are working with [fish shell](https://fishshell.com/):
     
     mkdir build; cd build
     cmake ..
     make -j(nproc)
-    ./tcomp
 
 
