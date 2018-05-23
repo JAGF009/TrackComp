@@ -41,6 +41,6 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/STRUCK")
 #message("HEADERS" ${HEADERS})
 
 add_executable(tcomp ${SOURCE} ${HEADERS})
-
+add_definitions(-DSHOW___)
 target_link_libraries(tcomp ${OpenCV_LIBS} Threads::Threads ${ZeroMQ_LIBRARY})
 

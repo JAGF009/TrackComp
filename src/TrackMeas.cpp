@@ -1,5 +1,3 @@
-#define SHOW___
-
 #include "TrackMeas.hpp"
 
 
@@ -152,7 +150,7 @@ void TrackMeas::go()
 #endif
     std::cout << "PRESS ESC TO STOP AT ANY TIME." << std::endl;
     const int db_size = db->nFrames();
-    int frame_number = -1;
+    frame_number = -1;
     std::unordered_set<std::string> ids{};
     try
     {
@@ -175,13 +173,10 @@ void TrackMeas::go()
     m_width = image.cols;
     m_height = image.rows;
 
-    std::cout << "m_width: " << m_width << " m_height: " << m_height << std::endl;
-
     switch(tracker->getMode())
     {
         case pix::TrackerInterface::Mode::Image:
         {
-            std::cout << "Mode image!" << std::endl;
             init_track(image, oldBB);
             break;
         }  
@@ -191,8 +186,6 @@ void TrackMeas::go()
         default: 
             std::cout << "Unkwonw mode!" << std::endl;
     }
-
-    std::cout << "Tracker initialized" << std::endl;
     
     while (1)
     {
@@ -229,6 +222,16 @@ void TrackMeas::go()
     stop();
 }
 
+void TrackMeas::goStoreResults(const std::string& path)
+{
+    store = true;
+    storage.open(path, ios::out | ios::trunc);
+    storage << "FRAME_N,GT_X,GT_Y,GT_W,GT_H,TRACK_X,TRACK_Y,TRACK_W,TRACK_H\n";
+    go();
+    store = false;
+    storage.close();
+}
+
 void TrackMeas::init_track(const cv::Mat& im, const pix::Rect& r)
 
 {
@@ -249,20 +252,30 @@ void TrackMeas::newFrame(const Rect& gt, const Rect& track)
 {
     if (!gt.valid() && !track.valid()) return;
     
-    n_frames ++;
+    n_frames++;
+    std::stringstream ss;
+    ss << frame_number;
+
     if (!gt.valid())
     {
         n_false_positives++;
         detectec_traj.push(track);
+        ss << ",0,0,0,0," << track.X() << "," << track.Y() << "," << track.W() << "," << track.H() << '\n';
+        if (store) storage << ss.str(); // storage.write(ss.str().c_str());
         return;
     }
+
     if (!track.valid())
     {
         n_gts++;
         n_false_negatives++;
         real_traj.push(gt);
+        ss << "," << gt.X() << "," << gt.Y() << "," << gt.W() << "," << gt.H() << ",0,0,0,0" << '\n';
+        if (store) storage << ss.str(); // storage.write(ss.str().c_str());
         return;
     }
+    ss << "," << gt.X() << "," << gt.Y() << "," << gt.W() << "," << gt.H() << "," << track.X() << "," << track.Y() << "," << track.W() << "," << track.H() << '\n';
+    if (store) storage << ss.str(); // storage.write(ss.str().c_str());
     n_gts++;
     m_fScore.emplace_back(gt.IoU(track));
     m_f1Score.emplace_back(gt.F1Intermediate(track));

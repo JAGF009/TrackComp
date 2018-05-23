@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_set>
 #include <opencv2/opencv.hpp>
+#include <fstream>
 
 #include "Rect.hpp"
 #include "Factory.hpp"
@@ -32,7 +33,10 @@ class TrackMeas
         m_int m_frameSkip{0};
         m_int m_width{0};
         m_int m_height{0};
+        m_int frame_number{0};
         bool m_stop{false};
+        bool store{false};
+        std::ofstream storage;
         std::string m_id;
         std::unique_ptr<DBReader> db;
         std::unique_ptr<pix::TrackerInterface> tracker;
@@ -57,6 +61,7 @@ class TrackMeas
 
         void init_track(const cv::Mat&, const pix::Rect&);
         void go();
+        void goStoreResults(const std::string& path);
         double fScore(double) const noexcept;
         double f1Score() const noexcept;
         double OTA(double) const noexcept;

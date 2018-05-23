@@ -62,7 +62,25 @@ int main(int argc, char** argv)
     else 
     {
         std::cout << "RUNNING SEQUENCE IN ALL TRACKERS" << std::endl;
-        std::cout << "RESULTS WILL BE SAVED ON: " << join(explode(pathFilesArg.getValue(), '/'), '-') + ".csv" << std::endl;
+        std::cout << "RESULTS WILL BE SAVED ON: " << "results/"+join(explode(pathFilesArg.getValue(), '/'), '-') + "-" + idArg.getValue() + "-" + "tracker" +".csv" << std::endl;
+        std::vector<pix::TrackerType> trackers{
+            pix::TrackerType::STRUCK, 
+            pix::TrackerType::Re3, 
+            pix::TrackerType::OpenCV_KCF,
+            pix::TrackerType::OpenCV_TLD, 
+            pix::TrackerType::OpenCV_MF,
+            pix::TrackerType::OpenCV_BOOSTING, 
+            pix::TrackerType::OpenCV_MIL
+        };
+
+        for (auto tracker: trackers)
+        {
+            pix::TrackMeas a(pathFilesArg.getValue(), idArg.getValue(), from_user_db(DBArg.getValue()), tracker);
+        
+            a.setFrameSkip(frameSkipArg.getValue());
+            a.goStoreResults("results/"+join(explode(pathFilesArg.getValue(), '/'), '-') + "-" + idArg.getValue() + "-" + show_user(tracker) +".csv");
+        }
+        
     }
     return 0;
 }
