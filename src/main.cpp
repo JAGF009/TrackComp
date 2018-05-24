@@ -62,7 +62,12 @@ int main(int argc, char** argv)
     else 
     {
         std::cout << "RUNNING SEQUENCE IN ALL TRACKERS" << std::endl;
-        std::cout << "RESULTS WILL BE SAVED ON: " << "results/"+join(explode(pathFilesArg.getValue(), '/'), '-') + "-" + idArg.getValue() + "-" + "tracker" +".csv" << std::endl;
+        std::vector<std::string> separated = explode(pathFilesArg.getValue(), '/');
+        auto sep_size = separated.size();
+
+        std::cout << "RESULTS WILL BE SAVED ON: " << "results/"+join({separated[sep_size - 2], separated[sep_size - 1]}, '-') + "-" + idArg.getValue() + "-" + "tracker" +".csv" << std::endl;
+        std::string path_base = "results/"+join({separated[sep_size - 2], separated[sep_size - 1]}, '-') + "-" + idArg.getValue() + "/";
+        
         std::vector<pix::TrackerType> trackers{
             pix::TrackerType::STRUCK, 
             pix::TrackerType::Re3, 
@@ -72,14 +77,16 @@ int main(int argc, char** argv)
             pix::TrackerType::OpenCV_BOOSTING, 
             pix::TrackerType::OpenCV_MIL
         };
-
+        
         for (auto tracker: trackers)
         {
             pix::TrackMeas a(pathFilesArg.getValue(), idArg.getValue(), from_user_db(DBArg.getValue()), tracker);
         
             a.setFrameSkip(frameSkipArg.getValue());
-            a.goStoreResults("results/"+join(explode(pathFilesArg.getValue(), '/'), '-') + "-" + idArg.getValue() + "-" + show_user(tracker) +".csv");
+            std::cout << path_base + show_user(tracker) + ".csv" << std::endl;
+            a.goStoreResults(path_base + show_user(tracker) + ".csv");
         }
+        
         
     }
     return 0;

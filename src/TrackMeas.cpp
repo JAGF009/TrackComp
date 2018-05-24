@@ -92,7 +92,7 @@ void stop_in_thread(pix::TrackMeas* tm)
 
 #include <cstdio>
 
-
+#include "../3rd_party/filesystem.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -224,10 +224,17 @@ void TrackMeas::go()
 
 void TrackMeas::goStoreResults(const std::string& path)
 {
+    ensureDir(path);
     store = true;
     storage.open(path, ios::out | ios::trunc);
     storage << "FRAME_N,GT_X,GT_Y,GT_W,GT_H,TRACK_X,TRACK_Y,TRACK_W,TRACK_H\n";
     go();
+    storage << "METRIC,VALUE\n";
+    storage << "FSCORE," << fScore(0.5) << '\n'; 
+    storage << "ATA," << ATA() << '\n'; 
+    storage << "OTA," << OTA(0.5) << '\n'; 
+    storage << "OTP," << OTP(0.5) << '\n'; 
+    storage << "DEVIATION," << Deviation() << '\n'; 
     store = false;
     storage.close();
 }

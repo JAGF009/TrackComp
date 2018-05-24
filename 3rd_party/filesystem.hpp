@@ -16,6 +16,14 @@ inline bool exists(const std::string& name) {
   return (stat (name.c_str(), &buffer) == 0);
 }
 
+inline bool isDir(const std::string& path) {
+  struct stat statBuffer;
+  if (stat(path.c_str(), &statBuffer) == 0 && S_ISDIR(statBuffer.st_mode)) return true;
+  return false;
+}
+
+bool ensureDir(const std::string& path);
+
 std::string dirname_st(const std::string& path);
 std::string basename_st(const std::string& path);
 

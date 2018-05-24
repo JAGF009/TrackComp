@@ -2,9 +2,14 @@
 #include <cstddef> // size_t
 #include <cstring> //strcpy
 #include <libgen.h> // basename dirname
+#include <errno.h> 
+
+#include "filesystem.hpp"
 
 #include <string>
 #include <vector>
+#include <iostream>
+#include "formated_string.hpp"
 
 
 using namespace std;
@@ -48,6 +53,23 @@ std::vector<std::string> filesInDirFilter(const std::string& folder, const std::
                files.erase(it); 
     }
     return files;
+}
+
+bool ensureDir(const std::string& path)
+{
+    std::vector<std::string> splitted = explode(path, '/');
+    std::string p = "";
+    for (int i = 0; i!=splitted.size() -1; i++)  // splitted.size() -1 avoid file
+    {
+        p += splitted[i] + "/";
+        // std::cout << "Checking for dir: " << p << std::endl;
+        if (!isDir(p))
+        {
+            // std::cout << "Making dir: " << p << std::endl;
+            mkdir(p.c_str(), 0777);
+        }   
+    }
+    // std::cout << "ensureDir" << std::endl;
 }
 
 
