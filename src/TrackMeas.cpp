@@ -148,7 +148,8 @@ void TrackMeas::go()
     std::thread thread1 (stop_in_thread, this);
     thread1.detach(); // I dont like to do this, but anyhow...
 #endif
-    std::cout << "PRESS ESC TO STOP AT ANY TIME." << std::endl;
+    std::cout << "\rPRESS ESC TO STOP AT ANY TIME." << "\n\r";
+    std::cout.flush();
     const int db_size = db->nFrames();
     frame_number = -1;
     std::unordered_set<std::string> ids{};
@@ -190,8 +191,8 @@ void TrackMeas::go()
     while (1)
     {
         int n = 100 * frame_number / db_size;
-        // std::cout << "\r ("<< frame_number << "/" << db_size << ") [" << mul_string("#", n) << mul_string(" ", 100-n) << "]" << " " << n << "%";
-        // std::cout.flush();
+        std::cout << "\r ("<< frame_number << "/" << db_size << ") [" << mul_string("#", n) << mul_string(" ", 100-n) << "]" << " " << n << "%";
+        std::cout.flush();
         name = db->imageName(frame_number); 
         if (name.empty()) break;
         auto realBB = db->getBBFrameID(frame_number++, m_id);
@@ -218,7 +219,8 @@ void TrackMeas::go()
         oldBB = newBB;
         if (m_stop) break;
     }
-    std::cout << endl;
+    std::cout << "\n\r";
+    std::cout.flush();
     stop();
 }
 

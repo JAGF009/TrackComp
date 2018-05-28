@@ -61,11 +61,11 @@ int main(int argc, char** argv)
     }
     else 
     {
-        std::cout << "RUNNING SEQUENCE IN ALL TRACKERS" << std::endl;
+        // std::cout << "RUNNING SEQUENCE IN ALL TRACKERS" << std::endl;
         std::vector<std::string> separated = explode(pathFilesArg.getValue(), '/');
         auto sep_size = separated.size();
 
-        std::cout << "RESULTS WILL BE SAVED ON: " << "results/"+join({separated[sep_size - 2], separated[sep_size - 1]}, '-') + "-" + idArg.getValue() + "-" + "tracker" +".csv" << std::endl;
+        // std::cout << "RESULTS WILL BE SAVED ON: " << "results/"+join({separated[sep_size - 2], separated[sep_size - 1]}, '-') + "-" + idArg.getValue() + "-" + "tracker" +".csv" << std::endl;
         std::string path_base = "results/"+join({separated[sep_size - 2], separated[sep_size - 1]}, '-') + "-" + idArg.getValue() + "/";
         
         std::vector<pix::TrackerType> trackers{
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             pix::TrackMeas a(pathFilesArg.getValue(), idArg.getValue(), from_user_db(DBArg.getValue()), tracker);
         
             a.setFrameSkip(frameSkipArg.getValue());
-            std::cout << path_base + show_user(tracker) + ".csv" << std::endl;
+            // std::cout << path_base + show_user(tracker) + ".csv" << std::endl;
             a.goStoreResults(path_base + show_user(tracker) + ".csv");
         }
         

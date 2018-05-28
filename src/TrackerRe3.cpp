@@ -52,7 +52,6 @@ const std::string ZMQEasyClient::KEEP = "KEEP";
 TrackerRe3::TrackerRe3() : proc({"python", "/home/dino/TrackingResearch/re3-tensorflow/demo/demo_zmq.py"}, subprocess::output{subprocess::PIPE}, subprocess::error{subprocess::PIPE})
 {
     setMode(TrackerInterface::Mode::Path);
-    std::cout << "Process opened" << std::endl;
 }
 
 TrackerRe3::~TrackerRe3()
